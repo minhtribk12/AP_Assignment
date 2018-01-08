@@ -24,12 +24,18 @@ def cell (lat, lng):
     y = (lng - Topleft.getLng())/GridSize[1] # calculate index in Y axis
     return Point(math.ceil(x), math.ceil(y)) # Round result and return
 
-def compareJourney(journey_1, journey_2):
+def compareJourney_HD(journey_1, journey_2):
     distance_m = distance.cdist(journey_1.getNdarray(), journey_2.getNdarray()) # calculate distance matrix
     min_axis0 = distance_m.min(axis=0) # extract min distance from each point of route to journey
     meanDistance = min_axis0.mean() # calculate mean distance
     maxDistance = min_axis0.max() # calculate max distance
     return meanDistance,maxDistance
+
+def compareJourney_DF(journey_1, journey_2):
+    distance_m = np.empty((journey_1.size, journey_2.size))
+    distance_m.fill(-1)
+    print distance_m
+
 
 def readRoute(filename):
     route = Journey()
@@ -75,7 +81,7 @@ def drawPlot(journey,option):
     a = journey.array_
     plt.plot(a[:,0], a[:,1], option)
 
-def main():
+def readData():
     journey_a = readJourney("../data_new/a.csv")
     journey_b = readJourney("../data_new/b.csv")
     route_1 = readRoute("../data_new/r1.csv")
@@ -93,43 +99,50 @@ def main():
     route_13 = readRoute("../data_new/r13.csv")
     route_14 = readRoute("../data_new/r14.csv")
     route_15 = readRoute("../data_new/r15.csv")
-    
- 
-    #################################################################################
-    result1 = compareJourney(journey_a,route_1)
+
+def Hausdorff_distance():
+    result1 = compareJourney_HD(journey_a,route_1)
     print result1
+    result2 = compareJourney_HD(journey_a,route_2)
+    print result2
+    result3 = compareJourney_HD(journey_a,route_3)
+    print result3
+    result4 = compareJourney_HD(journey_a,route_4)
+    print result4
+    result5 = compareJourney_HD(journey_a,route_5)
+    print result5
+    result6 = compareJourney_HD(journey_a,route_6)
+    print result6
+    result7 = compareJourney_HD(journey_a,route_7)
+    print result7
+    result8 = compareJourney_HD(journey_a,route_8)
+    print result8
+    result9 = compareJourney_HD(journey_a,route_9)
+    print result9
+    result10 = compareJourney_HD(journey_a,route_10)
+    print result10
+    result11 = compareJourney_HD(journey_a,route_11)
+    print result11
+    result12 = compareJourney_HD(journey_a,route_12)
+    print result12
+    result13 = compareJourney_HD(journey_a,route_13)
+    print result13
+    result14 = compareJourney_HD(journey_a,route_14)
+    print result14
+    result15 = compareJourney_HD(journey_a,route_15)
+    print result15
+
+def drawResult():
     drawPlot(journey_a, "ro")
     drawPlot(journey_b, "bo")
     drawPlot(route_1, "yo")
     plt.show()
-    result2 = compareJourney(journey_a,route_2)
-    print result2
-    result3 = compareJourney(journey_a,route_3)
-    print result3
-    result4 = compareJourney(journey_a,route_4)
-    print result4
-    result5 = compareJourney(journey_a,route_5)
-    print result5
-    result6 = compareJourney(journey_a,route_6)
-    print result6
-    result7 = compareJourney(journey_a,route_7)
-    print result7
-    result8 = compareJourney(journey_a,route_8)
-    print result8
-    result9 = compareJourney(journey_a,route_9)
-    print result9
-    result10 = compareJourney(journey_a,route_10)
-    print result10
-    result11 = compareJourney(journey_a,route_11)
-    print result11
-    result12 = compareJourney(journey_a,route_12)
-    print result12
-    result13 = compareJourney(journey_a,route_13)
-    print result13
-    result14 = compareJourney(journey_a,route_14)
-    print result14
-    result15 = compareJourney(journey_a,route_15)
-    print result15
+
+def main():
+    journey_a = readJourney("../data_new/a.csv")
+    route_1 = readRoute("../data_new/r1.csv")
+    compareJourney_DF(journey_a, route_1)
+    
 
 if __name__ == '__main__':
     main()
