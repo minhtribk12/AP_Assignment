@@ -14,40 +14,42 @@ import matplotlib.pyplot as plt
 
 Topleft = Point(11.175186, 106.309795)
 BottomRight = Point(10.368436, 107.036295)
-Lat_d = Topleft.getLat() - BottomRight.getLat()
-Lng_d = BottomRight.getLng() - Topleft.getLng()
-GridSize = (Lat_d/1000, Lng_d/1000)
-plt.axis([0, 1000, 0, 1000])
+Lat_d = Topleft.getLat() - BottomRight.getLat() # max distance in Y axis
+Lng_d = BottomRight.getLng() - Topleft.getLng() # max distance in X axis
+GridSize = (Lat_d/1000, Lng_d/1000) # Size of 1 cell
+plt.axis([0, 1000, 0, 1000]) # create space to draw plot
 
 def cell (lat, lng):
-    x = (Topleft.getLat() - lat)/GridSize[0]
-    y = (lng - Topleft.getLng())/GridSize[1]
-    return Point(math.ceil(x), math.ceil(y))
+    x = (Topleft.getLat() - lat)/GridSize[0] # calculate index in X axis
+    y = (lng - Topleft.getLng())/GridSize[1] # calculate index in Y axis
+    return Point(math.ceil(x), math.ceil(y)) # Round result and return
 
 def compareJourney(journey_1, journey_2):
-    distance_m = distance.cdist(journey_1.getNdarray(), journey_2.getNdarray())
-    min_axis0 = distance_m.min(axis=0)
-    meanDistance = min_axis0.mean()
-    maxDistance = min_axis0.max()
+    distance_m = distance.cdist(journey_1.getNdarray(), journey_2.getNdarray()) # calculate distance matrix
+    min_axis0 = distance_m.min(axis=0) # extract min distance from each point of route to journey
+    meanDistance = min_axis0.mean() # calculate mean distance
+    maxDistance = min_axis0.max() # calculate max distance
     return meanDistance,maxDistance
 
 def readRoute(filename):
     route = Journey()
     with open(filename, 'rb') as f:
-        reader = csv.reader(x.replace('\0', '') for x in f)
+        reader = csv.reader(x.replace('\0', '') for x in f) # read file and remove null character
         for row in reader:
-            x = float(row[5])
-            y = float(row[6])
-            point = cell(x,y)
-            if not point.equal(route.getLastPoint()):
+            x = float(row[5]) # convert Lat to float
+            y = float(row[6]) # convert Long to float
+            point = cell(x,y) # calculate cell
+            if not point.equal(route.getLastPoint()): # remove if new point is the same with recent point
                 route.addPoint(point)
-            polyLine = str(row[7]).replace("[","").replace("]","").replace(" ","").split(";")
+            # extract point list from polyline
+            polyLine = str(row[7]).replace("[","").replace("]","").replace(" ","").split(";") 
             for vertex in polyLine:
                 if vertex is not None:
                     point = str(vertex).split(",")
                     if (len(point) == 2):
                         y = float(point[0])
                         x = float(point[1])
+                        #check valid point
                         if ((x > BottomRight.getLat()) and (x < Topleft.getLat()) and (y < BottomRight.getLng()) and (y > Topleft.getLng())):
                             point = cell(x,y)
                             if not point.equal(route.getLastPoint()):
