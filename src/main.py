@@ -25,6 +25,13 @@ def cell (lat, lng):
     y = (lng - Topleft.getLng())/GridSize[1] # calculate index in Y axis
     return Point(math.ceil(x), math.ceil(y)) # Round result and return
 
+def checkvalidpoint(x,y):
+    if ((x > BottomRight.getLat()) and (x < Topleft.getLat()) and (y < BottomRight.getLng()) and (y > Topleft.getLng())):
+        return True
+    else:
+        return False
+
+
 def compareJourney_HD(journey_1, journey_2):
     distance_m = distance.cdist(journey_1.getNdarray(), journey_2.getNdarray()) # calculate distance matrix
     min_axis0 = distance_m.min(axis=0) # extract min distance from each point of route to journey
@@ -77,7 +84,7 @@ def readRoute(filename):
                 #print row[5] + " , " + row[6] + "error"
                 continue
             #check valid point
-            if ((x > BottomRight.getLat()) and (x < Topleft.getLat()) and (y < BottomRight.getLng()) and (y > Topleft.getLng())):
+            if (checkvalidpoint(x,y)):
                 point = cell(x,y)
                 if not point.equal(route.getLastPoint()):
                     route.addPoint(point)
@@ -96,7 +103,7 @@ def readRoute(filename):
                             #print point[0] + " , " + point[1] + "error"
                             continue
                         #check valid point
-                        if ((x > BottomRight.getLat()) and (x < Topleft.getLat()) and (y < BottomRight.getLng()) and (y > Topleft.getLng())):
+                        if (checkvalidpoint(x,y)):
                             point = cell(x,y)
                             if not point.equal(route.getLastPoint()):
                                 route.addPoint(point)
@@ -116,7 +123,7 @@ def readJourney(filename):
             except ValueError:
                 #print "value error"
                 continue
-            if ((x > BottomRight.getLat()) and (x < Topleft.getLat()) and (y < BottomRight.getLng()) and (y > Topleft.getLng())):
+            if (checkvalidpoint(x,y)):
                 point = cell(x,y)
                 if not point.equal(journey.getLastPoint()):
                     journey.addPoint(point)
@@ -245,6 +252,16 @@ def Hausdorff_distance(journey):
         result = compareJourney_HD(journey, route[1])
         print str(route[0]) + ": " + str(result)
 
+def Frechet_distance(journey):
+    for route in list_route:
+        result = compareJourney_DF(journey, route[1])
+        print str(route[0]) + ": " + str(result)
+
+def Frechet_distance2(journey):
+    for route in list_route:
+        result = compareJourney_VDF(journey, route[1])
+        print str(route[0]) + ": " + str(result)
+
 def drawResult(journey, index):
     drawPlot(journey, "ro")
     for route in list_route:
@@ -256,12 +273,9 @@ def main():
     journey_a = readJourney("../data_new/a.csv")
     journey_b = readJourney("../data_new/b.csv")
     readData()
-    Hausdorff_distance(journey_a)
-    drawResult(journey_a, 24)
-    #journey_a = readJourney("../data_new/a.csv")])
-    #list_route.append([1, readRoute("../data_old/1.csv")])
-    #print compareJourney_DF(journey_a, list_route.append([1)
-    #print compareJourney_VDF(journey_a, list_route.append([1)
+    Hausdorff_distance(journey_b)
+    #Frechet_distance(journey_a)
+    #drawResult(journey_a, 24)
     
 
 if __name__ == '__main__':
