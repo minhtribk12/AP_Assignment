@@ -18,6 +18,7 @@ Lat_d = Topleft.getLat() - BottomRight.getLat() # max distance in Y axis
 Lng_d = BottomRight.getLng() - Topleft.getLng() # max distance in X axis
 GridSize = (Lat_d/1000, Lng_d/1000) # Size of 1 cell
 plt.axis([0, 1000, 0, 1000]) # create space to draw plot
+list_route = []
 
 def cell (lat, lng):
     x = (Topleft.getLat() - lat)/GridSize[0] # calculate index in X axis
@@ -67,19 +68,33 @@ def readRoute(filename):
     with open(filename, 'rb') as f:
         reader = csv.reader(x.replace('\0', '') for x in f) # read file and remove null character
         for row in reader:
-            x = float(row[5]) # convert Lat to float
-            y = float(row[6]) # convert Long to float
-            point = cell(x,y) # calculate cell
-            if not point.equal(route.getLastPoint()): # remove if new point is the same with recent point
-                route.addPoint(point)
+            x = 0.0
+            y = 0.0
+            try:
+                y = float(row[5])
+                x = float(row[6])
+            except ValueError:
+                #print row[5] + " , " + row[6] + "error"
+                continue
+            #check valid point
+            if ((x > BottomRight.getLat()) and (x < Topleft.getLat()) and (y < BottomRight.getLng()) and (y > Topleft.getLng())):
+                point = cell(x,y)
+                if not point.equal(route.getLastPoint()):
+                    route.addPoint(point)
             # extract point list from polyline
             polyLine = str(row[7]).replace("[","").replace("]","").replace(" ","").split(";") 
             for vertex in polyLine:
                 if vertex is not None:
                     point = str(vertex).split(",")
                     if (len(point) == 2):
-                        y = float(point[0])
-                        x = float(point[1])
+                        x = 0.0
+                        y = 0.0
+                        try:
+                            y = float(point[0])
+                            x = float(point[1])
+                        except ValueError:
+                            #print point[0] + " , " + point[1] + "error"
+                            continue
                         #check valid point
                         if ((x > BottomRight.getLat()) and (x < Topleft.getLat()) and (y < BottomRight.getLng()) and (y > Topleft.getLng())):
                             point = cell(x,y)
@@ -93,8 +108,14 @@ def readJourney(filename):
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
         for row in reader:
-            x = float(row[0])
-            y = float(row[1])
+            x = 0.0
+            y = 0.0
+            try:
+                x = float(row[0])
+                y = float(row[1])
+            except ValueError:
+                #print "value error"
+                continue
             if ((x > BottomRight.getLat()) and (x < Topleft.getLat()) and (y < BottomRight.getLng()) and (y > Topleft.getLng())):
                 point = cell(x,y)
                 if not point.equal(journey.getLastPoint()):
@@ -107,67 +128,140 @@ def drawPlot(journey,option):
     plt.plot(a[:,0], a[:,1], option)
 
 def readData():
-    journey_a = readJourney("../data_new/a.csv")
-    journey_b = readJourney("../data_new/b.csv")
-    route_1 = readRoute("../data_new/r1.csv")
-    route_2 = readRoute("../data_new/r2.csv")
-    route_3 = readRoute("../data_new/r3.csv")
-    route_4 = readRoute("../data_new/r4.csv")
-    route_5 = readRoute("../data_new/r5.csv")
-    route_6 = readRoute("../data_new/r6.csv")
-    route_7 = readRoute("../data_new/r7.csv")
-    route_8 = readRoute("../data_new/r8.csv")
-    route_9 = readRoute("../data_new/r9.csv")
-    route_10 = readRoute("../data_new/r10.csv")
-    route_11 = readRoute("../data_new/r11.csv")
-    route_12 = readRoute("../data_new/r12.csv")
-    route_13 = readRoute("../data_new/r13.csv")
-    route_14 = readRoute("../data_new/r14.csv")
-    route_15 = readRoute("../data_new/r15.csv")
+    list_route.append([1, readRoute("../data_new/1.csv")])
+    list_route.append([2, readRoute("../data_new/2.csv")])
+    list_route.append([3, readRoute("../data_new/3.csv")])
+    list_route.append([4, readRoute("../data_new/4.csv")])
+    list_route.append([5, readRoute("../data_new/5.csv")])
+    list_route.append([6, readRoute("../data_new/6.csv")])
+    list_route.append([7, readRoute("../data_new/7.csv")])
+    list_route.append([8, readRoute("../data_new/8.csv")])
+    list_route.append([9, readRoute("../data_new/9.csv")])
+    list_route.append([10, readRoute("../data_new/10.csv")])
+    list_route.append([11, readRoute("../data_new/11.csv")])
+    list_route.append([12, readRoute("../data_new/12.csv")])
+    list_route.append([13, readRoute("../data_new/13.csv")])
+    list_route.append([14, readRoute("../data_new/14.csv")])
+    list_route.append([15, readRoute("../data_new/15.csv")])
+    list_route.append([16, readRoute("../data_new/16.csv")])
+    list_route.append([17, readRoute("../data_new/17.csv")])
+    list_route.append([18, readRoute("../data_new/18.csv")])
+    list_route.append([19, readRoute("../data_new/19.csv")])
+    list_route.append([20, readRoute("../data_new/20.csv")])
+    list_route.append([22, readRoute("../data_new/22.csv")])
+    list_route.append([23, readRoute("../data_new/23.csv")])
+    list_route.append([24, readRoute("../data_new/24.csv")])
+    list_route.append([25, readRoute("../data_new/25.csv")])
+    list_route.append([27, readRoute("../data_new/27.csv")])
+    list_route.append([28, readRoute("../data_new/28.csv")])
+    list_route.append([29, readRoute("../data_new/29.csv")])
+    list_route.append([30, readRoute("../data_new/30.csv")])
+    list_route.append([31, readRoute("../data_new/31.csv")])
+    list_route.append([32, readRoute("../data_new/32.csv")])
+    list_route.append([33, readRoute("../data_new/33.csv")])
+    list_route.append([34, readRoute("../data_new/34.csv")])
+    list_route.append([35, readRoute("../data_new/35.csv")])
+    list_route.append([36, readRoute("../data_new/36.csv")])
+    list_route.append([37, readRoute("../data_new/37.csv")])
+    list_route.append([38, readRoute("../data_new/38.csv")])
+    list_route.append([39, readRoute("../data_new/39.csv")])
+    list_route.append([40, readRoute("../data_new/40.csv")])
+    list_route.append([41, readRoute("../data_new/41.csv")])
+    list_route.append([42, readRoute("../data_new/42.csv")])
+    list_route.append([43, readRoute("../data_new/43.csv")])
+    list_route.append([44, readRoute("../data_new/44.csv")])
+    list_route.append([45, readRoute("../data_new/45.csv")])
+    list_route.append([46, readRoute("../data_new/46.csv")])
+    list_route.append([47, readRoute("../data_new/47.csv")])
+    list_route.append([48, readRoute("../data_new/48.csv")])
+    list_route.append([50, readRoute("../data_new/50.csv")])
+    list_route.append([51, readRoute("../data_new/51.csv")])
+    list_route.append([52, readRoute("../data_new/52.csv")])
+    list_route.append([53, readRoute("../data_new/53.csv")])
+    list_route.append([54, readRoute("../data_new/54.csv")])
+    list_route.append([55, readRoute("../data_new/55.csv")])
+    list_route.append([56, readRoute("../data_new/56.csv")])
+    list_route.append([57, readRoute("../data_new/57.csv")])
+    list_route.append([58, readRoute("../data_new/58.csv")])
+    list_route.append([59, readRoute("../data_new/59.csv")])
+    list_route.append([60, readRoute("../data_new/60.csv")])
+    list_route.append([61, readRoute("../data_new/61.csv")])
+    list_route.append([62, readRoute("../data_new/62.csv")])
+    list_route.append([64, readRoute("../data_new/64.csv")])
+    list_route.append([65, readRoute("../data_new/65.csv")])
+    list_route.append([66, readRoute("../data_new/66.csv")])
+    list_route.append([68, readRoute("../data_new/68.csv")])
+    list_route.append([69, readRoute("../data_new/69.csv")])
+    list_route.append([70, readRoute("../data_new/70.csv")])
+    list_route.append([71, readRoute("../data_new/71.csv")])
+    list_route.append([72, readRoute("../data_new/72.csv")])
+    list_route.append([73, readRoute("../data_new/73.csv")])
+    list_route.append([74, readRoute("../data_new/74.csv")])
+    list_route.append([76, readRoute("../data_new/76.csv")])
+    list_route.append([78, readRoute("../data_new/78.csv")])
+    list_route.append([79, readRoute("../data_new/79.csv")])
+    list_route.append([81, readRoute("../data_new/81.csv")])
+    list_route.append([83, readRoute("../data_new/83.csv")])
+    list_route.append([84, readRoute("../data_new/84.csv")])
+    list_route.append([85, readRoute("../data_new/85.csv")])
+    list_route.append([86, readRoute("../data_new/86.csv")])
+    list_route.append([87, readRoute("../data_new/87.csv")])
+    list_route.append([88, readRoute("../data_new/88.csv")])
+    list_route.append([89, readRoute("../data_new/89.csv")])
+    list_route.append([90, readRoute("../data_new/90.csv")])
+    list_route.append([91, readRoute("../data_new/91.csv")])
+    list_route.append([93, readRoute("../data_new/93.csv")])
+    list_route.append([94, readRoute("../data_new/94.csv")])
+    list_route.append([95, readRoute("../data_new/95.csv")])
+    list_route.append([96, readRoute("../data_new/96.csv")])
+    list_route.append([99, readRoute("../data_new/99.csv")])
+    list_route.append([100, readRoute("../data_new/100.csv")])
+    list_route.append([101, readRoute("../data_new/101.csv")])
+    list_route.append([102, readRoute("../data_new/102.csv")])
+    list_route.append([103, readRoute("../data_new/103.csv")])
+    list_route.append([104, readRoute("../data_new/104.csv")])
+    list_route.append([107, readRoute("../data_new/107.csv")])
+    list_route.append([110, readRoute("../data_new/110.csv")])
+    list_route.append([122, readRoute("../data_new/122.csv")])
+    list_route.append([126, readRoute("../data_new/126.csv")])
+    list_route.append([127, readRoute("../data_new/127.csv")])
+    list_route.append([128, readRoute("../data_new/128.csv")])
+    list_route.append([139, readRoute("../data_new/139.csv")])
+    list_route.append([140, readRoute("../data_new/140.csv")])
+    list_route.append([141, readRoute("../data_new/141.csv")])
+    list_route.append([144, readRoute("../data_new/144.csv")])
+    list_route.append([145, readRoute("../data_new/145.csv")])
+    list_route.append([146, readRoute("../data_new/146.csv")])
+    list_route.append([148, readRoute("../data_new/148.csv")])
+    list_route.append([149, readRoute("../data_new/149.csv")])
+    list_route.append([150, readRoute("../data_new/150.csv")])
+    list_route.append([151, readRoute("../data_new/151.csv")])
+    list_route.append([152, readRoute("../data_new/152.csv")])
+    list_route.append([153, readRoute("../data_new/153.csv")])
+    
 
-def Hausdorff_distance():
-    result1 = compareJourney_HD(journey_a,route_1)
-    print result1
-    result2 = compareJourney_HD(journey_a,route_2)
-    print result2
-    result3 = compareJourney_HD(journey_a,route_3)
-    print result3
-    result4 = compareJourney_HD(journey_a,route_4)
-    print result4
-    result5 = compareJourney_HD(journey_a,route_5)
-    print result5
-    result6 = compareJourney_HD(journey_a,route_6)
-    print result6
-    result7 = compareJourney_HD(journey_a,route_7)
-    print result7
-    result8 = compareJourney_HD(journey_a,route_8)
-    print result8
-    result9 = compareJourney_HD(journey_a,route_9)
-    print result9
-    result10 = compareJourney_HD(journey_a,route_10)
-    print result10
-    result11 = compareJourney_HD(journey_a,route_11)
-    print result11
-    result12 = compareJourney_HD(journey_a,route_12)
-    print result12
-    result13 = compareJourney_HD(journey_a,route_13)
-    print result13
-    result14 = compareJourney_HD(journey_a,route_14)
-    print result14
-    result15 = compareJourney_HD(journey_a,route_15)
-    print result15
+def Hausdorff_distance(journey):
+    for route in list_route:
+        result = compareJourney_HD(journey, route[1])
+        print str(route[0]) + ": " + str(result)
 
-def drawResult():
-    drawPlot(journey_a, "ro")
-    drawPlot(journey_b, "bo")
-    drawPlot(route_1, "yo")
+def drawResult(journey, index):
+    drawPlot(journey, "ro")
+    for route in list_route:
+        if (route[0] == index):
+            drawPlot(route[1], "bo")
     plt.show()
 
 def main():
     journey_a = readJourney("../data_new/a.csv")
-    route_1 = readRoute("../data_new/r1.csv")
-    print compareJourney_DF(journey_a, route_1)
-    print compareJourney_VDF(journey_a, route_1)
+    journey_b = readJourney("../data_new/b.csv")
+    readData()
+    Hausdorff_distance(journey_a)
+    drawResult(journey_a, 24)
+    #journey_a = readJourney("../data_new/a.csv")])
+    #list_route.append([1, readRoute("../data_old/1.csv")])
+    #print compareJourney_DF(journey_a, list_route.append([1)
+    #print compareJourney_VDF(journey_a, list_route.append([1)
     
 
 if __name__ == '__main__':
