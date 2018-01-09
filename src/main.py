@@ -248,19 +248,37 @@ def readData():
     
 
 def Hausdorff_distance(journey):
+    min_value = 1000
+    min_index = 0
     for route in list_route:
         result = compareJourney_HD(journey, route[1])
+        if (result[1] < min_value):
+            min_value = result[1]
+            min_index = route[0]
         print str(route[0]) + ": " + str(result)
+    print min_index
 
 def Frechet_distance(journey):
+    min_value = 1000
+    min_index = 0
     for route in list_route:
         result = compareJourney_DF(journey, route[1])
+        if (result < min_value):
+            min_value = result
+            min_index = route[0]
         print str(route[0]) + ": " + str(result)
+    print min_index
 
 def Frechet_distance2(journey):
+    min_value = 100000
+    min_index = 0
     for route in list_route:
         result = compareJourney_VDF(journey, route[1])
+        if (result < min_value):
+            min_value = result
+            min_index = route[0]
         print str(route[0]) + ": " + str(result)
+    print min_index
 
 def drawResult(journey, index):
     drawPlot(journey, "ro")
@@ -274,7 +292,7 @@ def main():
     journey_b = readJourney("../data_new/b.csv")
     readData()
     Hausdorff_distance(journey_b)
-    #Frechet_distance(journey_a)
+    #Frechet_distance2(journey_b)
     #drawResult(journey_a, 24)
     
 
