@@ -32,9 +32,34 @@ def compareJourney_HD(journey_1, journey_2):
     return meanDistance,maxDistance
 
 def compareJourney_DF(journey_1, journey_2):
-    distance_m = np.empty((journey_1.size, journey_2.size))
+    m = journey_1.size
+    n = journey_2.size
+    distance_m = np.empty((m, n))
     distance_m.fill(-1)
-    print distance_m
+    distance_m[0,0] = np.linalg.norm(journey_1.array_[0]-journey_2.array_[0])
+    for j in range (1, n):
+        distance_m[0,j] = max(distance_m[0,j-1], np.linalg.norm(journey_1.array_[0]-journey_2.array_[j]))
+    for i in range (1, m):
+        distance_m[i,0] = max(distance_m[i-1,0], np.linalg.norm(journey_1.array_[i]-journey_2.array_[0]))
+        for j in range (1, n):
+            min_distance = min([distance_m[i-1,j-1], distance_m[i, j-1], distance_m[i-1,j]])
+            distance_m[i,j] = max(min_distance, np.linalg.norm(journey_1.array_[i]-journey_2.array_[j]))
+    return distance_m[m-1,n-1]
+
+def compareJourney_VDF(journey_1, journey_2):
+    m = journey_1.size
+    n = journey_2.size
+    distance_m = np.empty((m, n))
+    distance_m.fill(-1)
+    distance_m[0,0] = np.linalg.norm(journey_1.array_[0]-journey_2.array_[0])
+    for j in range (1, n):
+        distance_m[0,j] = distance_m[0,j-1] + np.linalg.norm(journey_1.array_[0]-journey_2.array_[j])
+    for i in range (1, m):
+        distance_m[i,0] = distance_m[i-1,0] + np.linalg.norm(journey_1.array_[i]-journey_2.array_[0])
+        for j in range (1, n):
+            min_distance = min([distance_m[i-1,j-1], distance_m[i, j-1], distance_m[i-1,j]])
+            distance_m[i,j] = min_distance + np.linalg.norm(journey_1.array_[i]-journey_2.array_[j])
+    return distance_m[m-1,n-1]
 
 
 def readRoute(filename):
@@ -141,7 +166,8 @@ def drawResult():
 def main():
     journey_a = readJourney("../data_new/a.csv")
     route_1 = readRoute("../data_new/r1.csv")
-    compareJourney_DF(journey_a, route_1)
+    print compareJourney_DF(journey_a, route_1)
+    print compareJourney_VDF(journey_a, route_1)
     
 
 if __name__ == '__main__':
