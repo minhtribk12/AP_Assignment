@@ -21,6 +21,7 @@ Lng_d = BottomRight.getLng() - Topleft.getLng() # max distance in X axis
 GridSize = (Lat_d/1000, Lng_d/1000) # Size of 1 cell
 plt.axis([0, 1000, 0, 1000]) # create space to draw plot
 list_route = []
+max_method = True
 
 def cell (lat, lng):
     x = (Topleft.getLat() - lat)/GridSize[0] # calculate index in X axis
@@ -37,10 +38,12 @@ def checkvalidpoint(x,y):
 def compareJourney_HD(journey_1, journey_2):
     distance_m = distance.cdist(journey_1.getNdarray(), journey_2.getNdarray()) # calculate distance matrix
     min_axis0 = distance_m.min(axis=0) # extract min distance from each point of route to journey
+    min_axis1 = distance_m.min(axis=1)
     meanDistance = min_axis0.mean() # calculate mean distance
     maxDistance = min_axis0.max() # calculate max distance
-    truevalue = (min_axis0 <= 1.0)
-    ratio = float(((float((min_axis0<=1.2).sum()))/float(min_axis0.size))*100.0)
+    ratio0 = float((float((min_axis0<=1.0).sum()))/float(min_axis0.size))
+    ratio1 = float((float((min_axis1<=1.0).sum()))/float(min_axis1.size))
+    ratio = ratio0*ratio1*100
     return meanDistance,maxDistance,ratio
 
 def compareJourney_DF(journey_1, journey_2):
@@ -254,15 +257,21 @@ def readData():
 def Hausdorff_distance(journey):
     min_value = 1000
     min_index = 0
-    min_ratio = 0
+    max_ratio = 0
     for route in list_route:
         result = compareJourney_HD(journey, route[1])
-        if (result[1] < min_value):
-            min_value = result[1]
-            min_index = route[0]
-            min_ratio = result[2]
+        if max_method:
+            if (result[2] > max_ratio):
+                min_value = result[1]
+                min_index = route[0]
+                max_ratio = result[2]
+        else:
+            if (result[1] < min_value):
+                min_value = result[1]
+                min_index = route[0]
+                max_ratio = result[2]
         #print str(route[0]) + ": " + str(result)
-    print "Ratio: " + str(min_ratio) + "%" 
+    print "Ratio: " + str(max_ratio) + "%" 
     print "Distance: " + str(min_value)
     print "Bus Number: " + str(min_index)
     return min_index
@@ -283,6 +292,7 @@ def Frechet_distance(journey):
 def Frechet_distance2(journey):
     min_value = 100000
     min_index = 0
+    max_ratio = 0
     for route in list_route:
         result = compareJourney_VDF(journey, route[1])
         if (result < min_value):
@@ -312,11 +322,14 @@ def main():
                         help='Draw 2 journey')
     parser.add_argument('--algo', '-a', type=int, default=0,
                         help='Choose Algorithms')
+    parser.add_argument('--method', '-m', type=bool, default=True,
+                        help='Choose Algorithms')
     args = parser.parse_args()
 
     print('Input journey: {}'.format(args.Input))
 
     journey_a = readJourney(args.Input)
+    max_method = args.method
     readData()
     print "============================================================="
     if (args.algo == 0):
