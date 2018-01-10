@@ -11,6 +11,8 @@ from scipy.spatial import distance
 from journey import Journey
 from point import Point
 import matplotlib.pyplot as plt
+import argparse
+import timeit
 
 Topleft = Point(11.175186, 106.309795)
 BottomRight = Point(10.368436, 107.036295)
@@ -255,8 +257,10 @@ def Hausdorff_distance(journey):
         if (result[1] < min_value):
             min_value = result[1]
             min_index = route[0]
-        print str(route[0]) + ": " + str(result)
-    print min_index
+        #print str(route[0]) + ": " + str(result)
+    print "Distance: " + str(min_value)
+    print "Bus Number: " + str(min_index)
+    return min_index
 
 def Frechet_distance(journey):
     min_value = 1000
@@ -266,8 +270,10 @@ def Frechet_distance(journey):
         if (result < min_value):
             min_value = result
             min_index = route[0]
-        print str(route[0]) + ": " + str(result)
-    print min_index
+        #print str(route[0]) + ": " + str(result)
+    print "Distance: " + str(min_value)
+    print "Bus Number: " + str(min_index)
+    return min_index
 
 def Frechet_distance2(journey):
     min_value = 100000
@@ -277,8 +283,10 @@ def Frechet_distance2(journey):
         if (result < min_value):
             min_value = result
             min_index = route[0]
-        print str(route[0]) + ": " + str(result)
-    print min_index
+        #print str(route[0]) + ": " + str(result)
+    print "Distance: " + str(min_value)
+    print "Bus Number: " + str(min_index)
+    return min_index
 
 def drawResult(journey, index):
     drawPlot(journey, "ro")
@@ -288,12 +296,43 @@ def drawResult(journey, index):
     plt.show()
 
 def main():
-    journey_a = readJourney("../data_new/a.csv")
-    journey_b = readJourney("../data_new/b.csv")
+    found_route = 0
+    parser = argparse.ArgumentParser(description='Assignment Advanced Algorithms')
+    parser.add_argument('--Input', '-i', type=str, default="../data_new/a.csv",
+                        help='input file')
+    parser.add_argument('--draw', '-d', type=bool, default=False,
+                        help='Draw 2 journey')
+    parser.add_argument('--algo', '-a', type=int, default=0,
+                        help='Choose Algorithms')
+    args = parser.parse_args()
+
+    print('Input journey: {}'.format(args.Input))
+
+    journey_a = readJourney(args.Input)
     readData()
-    Hausdorff_distance(journey_b)
-    #Frechet_distance2(journey_b)
-    #drawResult(journey_a, 24)
+    print "============================================================="
+    if (args.algo == 0):
+        print "Hausdorff Distance"
+        start = timeit.default_timer()
+        found_route = Hausdorff_distance(journey_a)
+        stop = timeit.default_timer()
+        print "Calculation Time: " + str(stop - start)
+    if (args.algo == 1):
+        print "Frechet Distance"
+        start = timeit.default_timer()
+        found_route = Frechet_distance(journey_a)
+        stop = timeit.default_timer()
+        print "Calculation Time: " + str(stop - start)
+    if (args.algo == 2):
+        print "Frechet Distance (Variant)"
+        start = timeit.default_timer()
+        found_route = Frechet_distance2(journey_a)
+        stop = timeit.default_timer()
+        print "Calculation Time: " + str(stop - start)
+    print "============================================================="
+    
+    if (args.draw):
+        drawResult(journey_a, found_route)
     
 
 if __name__ == '__main__':
