@@ -39,7 +39,9 @@ def compareJourney_HD(journey_1, journey_2):
     min_axis0 = distance_m.min(axis=0) # extract min distance from each point of route to journey
     meanDistance = min_axis0.mean() # calculate mean distance
     maxDistance = min_axis0.max() # calculate max distance
-    return meanDistance,maxDistance
+    truevalue = (min_axis0 <= 1.0)
+    ratio = float(((float((min_axis0<=1.2).sum()))/float(min_axis0.size))*100.0)
+    return meanDistance,maxDistance,ratio
 
 def compareJourney_DF(journey_1, journey_2):
     m = journey_1.size
@@ -252,12 +254,15 @@ def readData():
 def Hausdorff_distance(journey):
     min_value = 1000
     min_index = 0
+    min_ratio = 0
     for route in list_route:
         result = compareJourney_HD(journey, route[1])
         if (result[1] < min_value):
             min_value = result[1]
             min_index = route[0]
+            min_ratio = result[2]
         #print str(route[0]) + ": " + str(result)
+    print "Ratio: " + str(min_ratio) + "%" 
     print "Distance: " + str(min_value)
     print "Bus Number: " + str(min_index)
     return min_index
@@ -289,7 +294,10 @@ def Frechet_distance2(journey):
     return min_index
 
 def drawResult(journey, index):
+    plt.figure(1)
+    plt.subplot(211)
     drawPlot(journey, "ro")
+    plt.subplot(212)
     for route in list_route:
         if (route[0] == index):
             drawPlot(route[1], "bo")
