@@ -334,6 +334,5 @@ def main():
     if (args.draw):
         drawResult(journey_a, found_route)
     
-
 if __name__ == '__main__':
     main()
